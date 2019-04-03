@@ -349,7 +349,7 @@
             <description>Run this microflow when the dropdown changes</description>
             <returnType type="Void"/>
         </property>
-        <property key="onChangeNanoflow" type="nanoflow" required="false" needsEntityContext="true">
+        <property key="onChangeNanoflow" type="nanoflow" required="false">
          <caption>On change nanoflow</caption>
          <category>Events</category>
          <description>Run this nanoflow when the dropdown changes (prefers nanoflow, if set).</description>
