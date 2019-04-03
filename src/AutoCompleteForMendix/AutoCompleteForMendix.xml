@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <widget id="AutoCompleteForMendix.widget.AutoCompleteForMendix" needsEntityContext="true" 
-    xmlns="http://www.mendix.com/widget/1.0/">
+    xmlns="http://www.mendix.com/widget/1.0/" offlineCapable="true">
     <name>AutoCompleteForMendix</name>
     <description>AutoComplete widget built using Select2 (https://select2.github.io/).</description>
 
@@ -27,6 +27,7 @@
                 <enumerationValue key="xpath">XPath</enumerationValue>
                 <enumerationValue key="microflow">Microflow</enumerationValue>
                 <enumerationValue key="microflowCache">Microflow (Cached)</enumerationValue>
+                <enumerationValue key="offline">Offline</enumerationValue>
             </enumerationValues>
         </property>
         <property key="searchDelay" type="integer" required="true" defaultValue="0">
@@ -363,6 +364,73 @@
             <caption>Progress Message</caption>
             <category>Events</category>
             <description>The progress message to show when executing the onchange microflow</description>
+        </property>
+        <!-- SEARCH - OFFLINE -->
+        <property key="offlineConstraints" type="object" isList="true" required="false">
+            <caption>Constraints</caption>
+            <category>Search - Offline</category>
+            <description>Searching offline is a little different. All constraints will be `and`ed</description>
+            <properties>
+                <property key="offlineConstraintAttribute" type="attribute" required="false" entityProperty="../dataAssociation">
+                    <caption>Attribute</caption>
+                    <category>Constraint</category>
+                    <description>String, Boolean, DateTime, Decimal, Enum, Integer, Long</description>
+                    <attributeTypes>
+                        <attributeType name="String" />
+                        <attributeType name="Boolean" />
+                        <attributeType name="DateTime" />
+                        <attributeType name="Decimal" />
+                        <attributeType name="Enum" />
+                        <attributeType name="Integer" />
+                        <attributeType name="Long" />
+                    </attributeTypes>
+                </property>
+                <property key="offlineConstraintOperator" type="enumeration" defaultValue="equals" required="true">
+                    <caption>Operator</caption>
+                    <category>Constraint</category>
+                    <description></description>
+                    <enumerationValues>
+                        <enumerationValue key="equals">Equals</enumerationValue>
+                        <enumerationValue key="lessThan">Less than</enumerationValue>
+                        <enumerationValue key="lessThanOrEquals">Less than or equal to</enumerationValue>
+                        <enumerationValue key="greatherThan">Greater than</enumerationValue>
+                        <enumerationValue key="greaterThanOrEquals">Greater than or equal to</enumerationValue>
+                        <enumerationValue key="contains">Contains</enumerationValue>
+                    </enumerationValues>
+                </property>
+                <property key="offlineConstraintValue" type="translatableString" required="true">
+                    <caption>Value</caption>
+                    <category>Constraint</category>
+                    <description>use `$value` for the value the use has typed in.</description>
+                    <translations>
+                        <translation lang="en_US"></translation>
+                    </translations>
+                </property>
+            </properties>
+        </property>
+        <property key="offlineLimit" type="integer" defaultValue="10" required="true">
+            <caption>Limit</caption>
+            <category>Search - Offline</category>
+            <description></description>
+        </property>
+        <property key="offlineSortAttribute" type="attribute" required="false" entityProperty="dataAssociation">
+            <caption>Sort Attribute</caption>
+            <category>Search - Offline</category>
+            <description></description>
+            <attributeTypes>
+                <attributeType name="String" />
+                <attributeType name="Boolean" />
+                <attributeType name="DateTime" />
+                <attributeType name="Decimal" />
+                <attributeType name="Enum" />
+                <attributeType name="Integer" />
+                <attributeType name="Long" />
+            </attributeTypes>
+        </property>
+        <property key="offlineSortAscending" type="boolean" defaultValue="true">
+            <caption>Ascending?</caption>
+            <category>Search - Offline</category>
+            <description>(Ignored if Sort Attribute is not specified)</description>
         </property>
     </properties>
 </widget>

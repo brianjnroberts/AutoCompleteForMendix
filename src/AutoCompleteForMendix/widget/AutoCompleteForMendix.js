@@ -75,6 +75,14 @@ define([
         _hadValidationFeedback: false,
         _initialized: false,
 
+        // offline variables
+        offlineSortAscending: null,
+        offlineSortAttribute: null,
+        offlineLimit: null,
+        offlineConstraints: null,
+        // .offlineConstraintAttribute
+        // .offlineConstraintOperator
+        // .offlineConstraintValue
         // dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
         constructor: function () {
             // Uncomment the following line to enable debug messages
@@ -258,6 +266,8 @@ define([
                         valid = false;
                         logger.error(this.id + ": 'Search Attribute' must be specified with search type Microflow (Cached)");
                     }
+                    break;
+                case "offline":
                     break;
                 default:
                     valid = false;
@@ -551,23 +561,18 @@ define([
         _resetSubscriptions: function () {
             logger.debug(this.id + "._resetSubscriptions");
             // Release handles on previous object, if any.
-            if (this._handles) {
-                dojoArray.forEach(this._handles, function (handle) {
-                    mx.data.unsubscribe(handle);
-                });
-                this._handles = [];
-            }
+            this.unsubscribeAll();
 
             // When a mendix object exists create subscriptions.
             if (this._contextObj) {
-                var objectHandle = this.subscribe({
+                this.subscribe({
                     guid: this._contextObj.getGuid(),
                     callback: dojoLang.hitch(this, function (guid) {
                         this._updateRendering();
                     })
                 });
 
-                var attrHandle = this.subscribe({
+                this.subscribe({
                     guid: this._contextObj.getGuid(),
                     attr: this._reference,
                     callback: dojoLang.hitch(this, function (guid, attr, attrValue) {
@@ -576,18 +581,17 @@ define([
                     })
                 });
 
-                var validationHandle = this.subscribe({
+                this.subscribe({
                     guid: this._contextObj.getGuid(),
                     val: true,
                     callback: dojoLang.hitch(this, this._handleValidation)
                 });
-
-                this._handles = [objectHandle, attrHandle, validationHandle];
             }
         },
 
         /* CUSTOM FUNCTIONS START HERE */
         _initialiseQueryAdapter: function () {
+
             var core = this;
 
             /*
@@ -700,6 +704,30 @@ define([
                     }
 
                     searchCallback(filteredObjs);
+                }
+                else if (self.searchType === "offline") {
+                    var entity = self.dataAssociation.split("/").slice(-1)[0];
+                    var constraints = [],
+                        filter = {
+                            offset: 0,
+                            limit: self.offlineLimit,
+                            sort: [[self.offlineSortAttribute, (self.offlineSortAscending ? "asc" : "desc")]]
+                        };
+                    for (var i = 0; i < self.offlineConstraints.length; i++) {
+                        var templatedConstraintValue = self.offlineConstraints[i].offlineConstraintValue.split('$value').join(self._currentSearchTerm);
+                        var constraintValue = isNaN(parseInt(templatedConstraintValue)) ? templatedConstraintValue : templatedConstraintValue * 1
+                        var newConstraint = {
+                            attribute: self.offlineConstraints[i].offlineConstraintAttribute,
+                            operator: self.offlineConstraints[i].offlineConstraintOperator,
+                            value: constraintValue
+                        }
+                        constraints.push(newConstraint);
+                    }
+
+                    mx.data.getOffline(entity, constraints, filter, searchCallback, function (e) {
+                        console.error("Could not retrieve slice:", e);
+                        searchCallback(null);
+                    });
                 }
             }
             if (this.searchDelay && this.searchDelay > 0) {
