@@ -63,14 +63,9 @@ define([
         variableData: [],
         _currentSearchTerm: "",
         _localObjectCache: null,
-<<<<<<< HEAD
         _updateCache: true,
         _queryTimeout: null,
-=======
-        _updateCache : true,
-        _queryTimeout : null,
-        _currentReferenceAttributesLength : 0,
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
+        _currentReferenceAttributesLength: 0,
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -175,7 +170,7 @@ define([
                     // execute our search MF and then initialise the combo when we return
                     this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function (objs) {
                         self._localObjectCache = objs;
-                        if(!self._initialized) {
+                        if (!self._initialized) {
                             self._initialiseControl(callback);
                         } else {
                             if (callback && typeof callback === "function") {
@@ -184,19 +179,14 @@ define([
                         }
                     });
                 }
-<<<<<<< HEAD
                 else {
-                    this._initialiseControl(callback);
-=======
-                else{
-                    if(!this._initialized) {
+                    if (!this._initialized) {
                         this._initialiseControl(callback);
                     } else {
                         if (callback && typeof callback === "function") {
                             callback();
                         }
                     }
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                 }
             }
         },
@@ -281,42 +271,42 @@ define([
         _initialiseControl: function (callback) {
             var self = this;
             this._$combo.select2(this._getSelect2Options())
-            .on("select2:select", function(e) {
+                .on("select2:select", function (e) {
 
-                // set the value                
-                if( e.params && e.params.data ){                        
-                    var guid = e.params.data.id;                        
-                    self._contextObj.addReference(self._reference, guid);
-                }
+                    // set the value                
+                    if (e.params && e.params.data) {
+                        var guid = e.params.data.id;
+                        self._contextObj.addReference(self._reference, guid);
+                    }
 
-                // run the OC microflow if one has been configured.                   
-                if( self.onChangeMicroflow ) {
-                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
-                }
-            })
-            .on("select2:unselect", function(e) {
-                // set the value
-                if( e.params && e.params.data ){                        
-                    var guid = e.params.data.id;
-                    self._contextObj.removeReferences(self._reference, [guid]);
-                }
+                    // run the OC microflow if one has been configured.                   
+                    if (self.onChangeMicroflow) {
+                        self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
+                    }
+                })
+                .on("select2:unselect", function (e) {
+                    // set the value
+                    if (e.params && e.params.data) {
+                        var guid = e.params.data.id;
+                        self._contextObj.removeReferences(self._reference, [guid]);
+                    }
 
-                // run the OC microflow if one has been configured.                   
-                if( self.onChangeMicroflow ) {
-                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
-                }
-            })
-            .on("select2:close",function(e){
-                var setfocus = setTimeout(function() {
-                    self._$combo.select2('focus');
-                }, 0);                
-            });
-            
+                    // run the OC microflow if one has been configured.                   
+                    if (self.onChangeMicroflow) {
+                        self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
+                    }
+                })
+                .on("select2:close", function (e) {
+                    var setfocus = setTimeout(function () {
+                        self._$combo.select2('focus');
+                    }, 0);
+                });
+
             this._$combo.data('select2')
-            .on('results:message', function () {
-                this.dropdown._positionDropdown();
-                this.dropdown._resizeDropdown();
-            });
+                .on('results:message', function () {
+                    this.dropdown._positionDropdown();
+                    this.dropdown._resizeDropdown();
+                });
 
             this._updateControlDisplay();
             this._initialized = true;
@@ -325,7 +315,7 @@ define([
             this._loadCurrentValue(callback);
         },
 
-        _getSelect2Options : function(){
+        _getSelect2Options: function () {
             var self = this;
             var options = {
                 dataAdapter: this._queryAdapter,
@@ -379,94 +369,37 @@ define([
                     // return item template, assume its html
                     return $(item.dropdownDisplay);
                 }
-<<<<<<< HEAD
-            })
-                .on("select2:select", function (e) {
-
-                    // set the value                
-                    if (e.params && e.params.data) {
-                        var guid = e.params.data.id;
-                        self._contextObj.addReference(self._reference, guid);
-                    }
-
-                    // run the OC microflow if one has been configured.                   
-                    if (self.onChangeMicroflow) {
-                        self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
-                    } else if (self.onChangeNanoflow) {
-                        self._callNanoflow();
-                    }
-                })
-                .on("select2:unselect", function (e) {
-                    // set the value
-                    if (e.params && e.params.data) {
-                        var guid = e.params.data.id;
-                        self._contextObj.removeReferences(self._reference, [guid]);
-                    }
-
-                    // run the OC microflow if one has been configured.                   
-                    if (self.onChangeMicroflow) {
-                        self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow);
-                    } else if (self.onChangeNanoflow) {
-                        self._callNanoflow();
-                    }
-                })
-                .on("select2:close", function (e) {
-                    var setfocus = setTimeout(function () {
-                        self._$combo.select2('focus');
-                    }, 0);
-                });
-
-            this._updateControlDisplay();
-=======
             };
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
 
             var parentSelector = this.parentSelector;
 
-            if(parentSelector){
+            if (parentSelector) {
                 options.dropdownParent = $(parentSelector);
             }
             return options;
         },
 
-<<<<<<< HEAD
         _updateControlDisplay: function () {
-            // fixed property gets checked first
-            if (this.disabled) {
+
+            // if data view is disabled
+            if (this.get("disabled")) {
                 this._$combo.prop('disabled', true);
-            } else {
-                this._$combo.prop('disabled', false);
             }
-            // attribute property beats fixed property    
-            if (this.disabledViaAttribute) {
-                if (this._contextObj.get(this.disabledViaAttribute)) {
+            else {
+                // fixed property gets checked first
+                if (this.disabled) {
                     this._$combo.prop('disabled', true);
                 } else {
                     this._$combo.prop('disabled', false);
                 }
-=======
-        _updateControlDisplay : function(){
-
-            // if data view is disabled
-            if(this.get("disabled")) {
-                this._$combo.prop('disabled',true);
-            }
-            else {
-                    // fixed property gets checked first
-                    if(this.disabled){
-                        this._$combo.prop('disabled',true);
-                    } else{
-                        this._$combo.prop('disabled',false);
+                // attribute property beats fixed property    
+                if (this.disabledViaAttribute) {
+                    if (this._contextObj.get(this.disabledViaAttribute)) {
+                        this._$combo.prop('disabled', true);
+                    } else {
+                        this._$combo.prop('disabled', false);
                     }
-                    // attribute property beats fixed property    
-                    if(this.disabledViaAttribute){
-                        if(this._contextObj.get(this.disabledViaAttribute) ){
-                            this._$combo.prop('disabled',true);
-                        } else{
-                            this._$combo.prop('disabled',false);
-                        }
-                    }
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
+                }
             }
 
             // fixed property gets checked first
@@ -708,11 +641,7 @@ define([
                         }
                     });
 
-<<<<<<< HEAD
                 if (self.searchType === "xpath") {
-=======
-                if( self.searchType === "xpath"){ 
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                     var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
                     var method = self.xpathSearchMethod == "startswith" ? "starts-with" : self.xpathSearchMethod;
                     var term = params.term.replace(/'/g, "''");
@@ -816,14 +745,10 @@ define([
 
                         var split = self._attributeList[i].variableAttribute.split("/");
                         var refAttribute = {};
-<<<<<<< HEAD
-                        for (var a in self._attributeList[i]) refAttribute[a] = self._attributeList[i][a];
-=======
-                        for(var a in self._attributeList[i]){
-                            refAttribute[a]=self._attributeList[i][a];
+                        for (var a in self._attributeList[i]) {
+                            refAttribute[a] = self._attributeList[i][a];
                         }
 
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                         refAttribute.attributeIndex = i;
                         refAttribute.parentGuid = availableObject.getGuid();
                         refAttribute.referenceGuid = availableObject.getReference(split[0]);
@@ -964,61 +889,49 @@ define([
         _fetchReferences: function (referenceAttributes, formatResultsFunction, callback) {
             logger.debug(this.id + "._fetchReferences");
             this._currentReferenceAttributesLength = referenceAttributes.length;
-             
+
             for (var i = 0; i < referenceAttributes.length; i++) {
                 var attributeData = referenceAttributes[i];
                 this._getReferencedObject(i, attributeData.referenceGuid, attributeData.referenceAttribute, attributeData.attributeIndex, attributeData.parentGuid, formatResultsFunction, callback);
             }
         },
 
-        _getReferencedObject : function(index, guid, referenceAttribute, attributeIndex, parentGuid, formatResultsFunction, callback){
+        _getReferencedObject: function (index, guid, referenceAttribute, attributeIndex, parentGuid, formatResultsFunction, callback) {
             var data = {
                 i: index,
                 attributeIndex: attributeIndex,
-                parentGuid : parentGuid,
-                referenceAttribute : referenceAttribute
+                parentGuid: parentGuid,
+                referenceAttribute: referenceAttribute
             };
 
-<<<<<<< HEAD
-                var result = $.grep(this.variableData, function (e) {
-                    return e.guid == data.parentGuid;
-=======
             if (guid !== "") {
                 mx.data.get({
                     guid: guid,
                     callback: dojoLang.hitch(this, this._fetchReferenceCallback, data, formatResultsFunction, callback)
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                 });
             }
-            else{
-                this._fetchReferenceCallback(null,formatResultsFunction, callback, null);
+            else {
+                this._fetchReferenceCallback(null, formatResultsFunction, callback, null);
             }
         },
 
-        _fetchReferenceCallback : function (data, formatResultsFunction, callback, obj) {
+        _fetchReferenceCallback: function (data, formatResultsFunction, callback, obj) {
             logger.debug(this.id + "._fetchReferences get callback");
 
-            if(obj != null){
+            if (obj != null) {
 
-                if(data.referenceAttribute.indexOf("/") <= -1){
+                if (data.referenceAttribute.indexOf("/") <= -1) {
                     var value = this._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
 
-                    var result = $.grep(this.variableData, function(e){ 
-                        return e.guid == data.parentGuid; 
+                    var result = $.grep(this.variableData, function (e) {
+                        return e.guid == data.parentGuid;
                     });
 
-<<<<<<< HEAD
-                if (result && result[0]) {
-                    var resultVariable = $.grep(result[0].variables, function (e) { return e.id == data.attributeIndex; });
-                    if (resultVariable && resultVariable[0]) {
-                        resultVariable[0].value = value;
-=======
-                    if( result && result[0] ){
-                        var resultVariable = $.grep(result[0].variables, function(e){ return e.id == data.attributeIndex; });
-                        if( resultVariable && resultVariable[0]){
+                    if (result && result[0]) {
+                        var resultVariable = $.grep(result[0].variables, function (e) { return e.id == data.attributeIndex; });
+                        if (resultVariable && resultVariable[0]) {
                             resultVariable[0].value = value;
                         }
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                     }
 
                     this._currentReferenceAttributesLength--;
@@ -1027,36 +940,12 @@ define([
                         dojoLang.hitch(this, formatResultsFunction, callback)();
                     }
                 }
-                else{
+                else {
                     var split = data.referenceAttribute.split("/");
                     var referenceGuid = obj.getReference(split[0]);
                     var referenceAttribute = split.slice(2).join("/");
 
-<<<<<<< HEAD
-            for (var i = 0; i < referenceAttributes.length; i++) {
-                var listObj = referenceAttributes[i],
-                    split = referenceAttributes[i].variableAttribute.split("/"),
-                    guid = referenceAttributes[i].referenceGuid,
-                    attributeIndex = referenceAttributes[i].attributeIndex,
-                    parentGuid = referenceAttributes[i].parentGuid,
-                    referenceAttribute = referenceAttributes[i].referenceAttribute,
-                    dataparam = {
-                        i: i,
-                        listObj: listObj,
-                        attributeIndex: attributeIndex,
-                        parentGuid: parentGuid,
-                        referenceAttribute: referenceAttribute
-                    };
-
-
-                if (guid !== "") {
-                    mx.data.get({
-                        guid: guid,
-                        callback: dojoLang.hitch(this, callbackfunction, dataparam)
-                    });
-=======
                     this._getReferencedObject(data.i, referenceGuid, referenceAttribute, data.attributeIndex, data.parentGuid, formatResultsFunction, callback);
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                 }
             }
         },
@@ -1100,7 +989,7 @@ define([
 
         _execMf: function (guid, mf, cb, showProgress, message) {
             var self = this;
-            if (guid && mf) {                
+            if (guid && mf) {
                 var options = {
                     params: {
                         applyto: 'selection',
@@ -1117,30 +1006,13 @@ define([
                     }
                 }
 
-<<<<<<< HEAD
-        },
-
-        _callNanoflow: function () {
-            mx.data.callNanoflow({
-                nanoflow: this.onChangeNanoflow,
-                origin: this.mxform,
-                context: this.mxcontext,
-                callback: function (result) {
-                    alert("Nanoflow completed with result " + result);
-                },
-                error: function (error) {
-                    alert(error.message);
-                }
-            });
-=======
-                if(showProgress){                    
+                if (showProgress) {
                     options.progress = "modal";
                     options.progressMsg = message;
                 }
 
-                mx.ui.action(mf,options, this);
+                mx.ui.action(mf, options, this);
             }
->>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
         }
         /* CUSTOM FUNCTIONS END HERE */
     });
