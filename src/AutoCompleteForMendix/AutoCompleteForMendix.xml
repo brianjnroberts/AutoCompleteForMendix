@@ -401,7 +401,7 @@
                 <property key="offlineConstraintValue" type="translatableString" required="true">
                     <caption>Value</caption>
                     <category>Constraint</category>
-                    <description>use `$value` for the value the use has typed in.</description>
+                    <description>use `$value` for the value the user has typed in.</description>
                     <translations>
                         <translation lang="en_US"></translation>
                     </translations>

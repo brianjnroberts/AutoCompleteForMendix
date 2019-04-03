@@ -13,6 +13,9 @@
     Documentation
     ========================
     AutoComplete widget built using Select2 (https://select2.github.io/).
+    TODO: make offline sort order optional
+    TODO: make offline limit optional
+    TODO: make offline events work
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
