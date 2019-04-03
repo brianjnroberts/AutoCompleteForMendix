@@ -4,10 +4,10 @@
     ========================
 
     @file      : AutoCompleteForMendix.js
-    @version   : 3.2.0
+    @version   : 4.0.0
     @author    : Iain Lindsay
-    @date      : 2017-08-21
-    @copyright : AuraQ Limited 2017
+    @date      : 2018-12-19
+    @copyright : AuraQ Limited 2018
     @license   : Apache V2
 
     Documentation
@@ -63,8 +63,14 @@ define([
         variableData: [],
         _currentSearchTerm: "",
         _localObjectCache: null,
+<<<<<<< HEAD
         _updateCache: true,
         _queryTimeout: null,
+=======
+        _updateCache : true,
+        _queryTimeout : null,
+        _currentReferenceAttributesLength : 0,
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
 
         // Internal variables. Non-primitives created in the prototype are shared between all widget instances.
         _handles: null,
@@ -72,6 +78,7 @@ define([
         _$alertdiv: null,
         _alertDiv: null,
         _hadValidationFeedback: false,
+        _initialized: false,
 
         // dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
         constructor: function () {
@@ -168,11 +175,28 @@ define([
                     // execute our search MF and then initialise the combo when we return
                     this._execMf(self._contextObj.getGuid(), self.cacheSearchMicroflow, function (objs) {
                         self._localObjectCache = objs;
-                        self._initialiseControl(callback);
+                        if(!self._initialized) {
+                            self._initialiseControl(callback);
+                        } else {
+                            if (callback && typeof callback === "function") {
+                                callback();
+                            }
+                        }
                     });
                 }
+<<<<<<< HEAD
                 else {
                     this._initialiseControl(callback);
+=======
+                else{
+                    if(!this._initialized) {
+                        this._initialiseControl(callback);
+                    } else {
+                        if (callback && typeof callback === "function") {
+                            callback();
+                        }
+                    }
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                 }
             }
         },
@@ -256,7 +280,54 @@ define([
 
         _initialiseControl: function (callback) {
             var self = this;
-            this._$combo.select2({
+            this._$combo.select2(this._getSelect2Options())
+            .on("select2:select", function(e) {
+
+                // set the value                
+                if( e.params && e.params.data ){                        
+                    var guid = e.params.data.id;                        
+                    self._contextObj.addReference(self._reference, guid);
+                }
+
+                // run the OC microflow if one has been configured.                   
+                if( self.onChangeMicroflow ) {
+                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
+                }
+            })
+            .on("select2:unselect", function(e) {
+                // set the value
+                if( e.params && e.params.data ){                        
+                    var guid = e.params.data.id;
+                    self._contextObj.removeReferences(self._reference, [guid]);
+                }
+
+                // run the OC microflow if one has been configured.                   
+                if( self.onChangeMicroflow ) {
+                    self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
+                }
+            })
+            .on("select2:close",function(e){
+                var setfocus = setTimeout(function() {
+                    self._$combo.select2('focus');
+                }, 0);                
+            });
+            
+            this._$combo.data('select2')
+            .on('results:message', function () {
+                this.dropdown._positionDropdown();
+                this.dropdown._resizeDropdown();
+            });
+
+            this._updateControlDisplay();
+            this._initialized = true;
+
+            // set the default value for the dropdown (if reference is already set)
+            this._loadCurrentValue(callback);
+        },
+
+        _getSelect2Options : function(){
+            var self = this;
+            var options = {
                 dataAdapter: this._queryAdapter,
                 minimumInputLength: this.minimumInputLength,
                 width: '100%',
@@ -308,6 +379,7 @@ define([
                     // return item template, assume its html
                     return $(item.dropdownDisplay);
                 }
+<<<<<<< HEAD
             })
                 .on("select2:select", function (e) {
 
@@ -345,12 +417,19 @@ define([
                 });
 
             this._updateControlDisplay();
+=======
+            };
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
 
-            // set the default value for the dropdown (if reference is already set)
-            this._loadCurrentValue(callback);
+            var parentSelector = this.parentSelector;
 
+            if(parentSelector){
+                options.dropdownParent = $(parentSelector);
+            }
+            return options;
         },
 
+<<<<<<< HEAD
         _updateControlDisplay: function () {
             // fixed property gets checked first
             if (this.disabled) {
@@ -365,6 +444,29 @@ define([
                 } else {
                     this._$combo.prop('disabled', false);
                 }
+=======
+        _updateControlDisplay : function(){
+
+            // if data view is disabled
+            if(this.get("disabled")) {
+                this._$combo.prop('disabled',true);
+            }
+            else {
+                    // fixed property gets checked first
+                    if(this.disabled){
+                        this._$combo.prop('disabled',true);
+                    } else{
+                        this._$combo.prop('disabled',false);
+                    }
+                    // attribute property beats fixed property    
+                    if(this.disabledViaAttribute){
+                        if(this._contextObj.get(this.disabledViaAttribute) ){
+                            this._$combo.prop('disabled',true);
+                        } else{
+                            this._$combo.prop('disabled',false);
+                        }
+                    }
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
             }
 
             // fixed property gets checked first
@@ -606,7 +708,11 @@ define([
                         }
                     });
 
+<<<<<<< HEAD
                 if (self.searchType === "xpath") {
+=======
+                if( self.searchType === "xpath"){ 
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                     var xpath = '//' + self._entity + self.dataConstraint.replace('[%CurrentObject%]', self._contextObj.getGuid());
                     var method = self.xpathSearchMethod == "startswith" ? "starts-with" : self.xpathSearchMethod;
                     var term = params.term.replace(/'/g, "''");
@@ -691,7 +797,8 @@ define([
                 currentVariable.variables = [];
 
                 for (var i = 0; i < self._attributeList.length; i++) {
-                    if (availableObject.get(self._attributeList[i].variableAttribute) !== null) {
+                    var variableAttribute = availableObject.get(self._attributeList[i].variableAttribute);
+                    if (variableAttribute !== null) {
                         var value = self._fetchAttribute(availableObject, self._attributeList[i].variableAttribute, i);
 
                         currentVariable.variables.push({
@@ -709,11 +816,18 @@ define([
 
                         var split = self._attributeList[i].variableAttribute.split("/");
                         var refAttribute = {};
+<<<<<<< HEAD
                         for (var a in self._attributeList[i]) refAttribute[a] = self._attributeList[i][a];
+=======
+                        for(var a in self._attributeList[i]){
+                            refAttribute[a]=self._attributeList[i][a];
+                        }
+
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                         refAttribute.attributeIndex = i;
                         refAttribute.parentGuid = availableObject.getGuid();
                         refAttribute.referenceGuid = availableObject.getReference(split[0]);
-                        refAttribute.referenceAttribute = split[2];
+                        refAttribute.referenceAttribute = split.slice(2).join("/");
 
                         referenceAttributes.push(refAttribute);
                     }
@@ -849,31 +963,76 @@ define([
 
         _fetchReferences: function (referenceAttributes, formatResultsFunction, callback) {
             logger.debug(this.id + "._fetchReferences");
-            var self = this;
-            var l = referenceAttributes.length;
+            this._currentReferenceAttributesLength = referenceAttributes.length;
+             
+            for (var i = 0; i < referenceAttributes.length; i++) {
+                var attributeData = referenceAttributes[i];
+                this._getReferencedObject(i, attributeData.referenceGuid, attributeData.referenceAttribute, attributeData.attributeIndex, attributeData.parentGuid, formatResultsFunction, callback);
+            }
+        },
 
-            var callbackfunction = function (data, obj) {
-                logger.debug(this.id + "._fetchReferences get callback");
-                var value = this._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
+        _getReferencedObject : function(index, guid, referenceAttribute, attributeIndex, parentGuid, formatResultsFunction, callback){
+            var data = {
+                i: index,
+                attributeIndex: attributeIndex,
+                parentGuid : parentGuid,
+                referenceAttribute : referenceAttribute
+            };
 
+<<<<<<< HEAD
                 var result = $.grep(this.variableData, function (e) {
                     return e.guid == data.parentGuid;
+=======
+            if (guid !== "") {
+                mx.data.get({
+                    guid: guid,
+                    callback: dojoLang.hitch(this, this._fetchReferenceCallback, data, formatResultsFunction, callback)
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                 });
+            }
+            else{
+                this._fetchReferenceCallback(null,formatResultsFunction, callback, null);
+            }
+        },
 
+        _fetchReferenceCallback : function (data, formatResultsFunction, callback, obj) {
+            logger.debug(this.id + "._fetchReferences get callback");
+
+            if(obj != null){
+
+                if(data.referenceAttribute.indexOf("/") <= -1){
+                    var value = this._fetchAttribute(obj, data.referenceAttribute, data.attributeIndex);
+
+                    var result = $.grep(this.variableData, function(e){ 
+                        return e.guid == data.parentGuid; 
+                    });
+
+<<<<<<< HEAD
                 if (result && result[0]) {
                     var resultVariable = $.grep(result[0].variables, function (e) { return e.id == data.attributeIndex; });
                     if (resultVariable && resultVariable[0]) {
                         resultVariable[0].value = value;
+=======
+                    if( result && result[0] ){
+                        var resultVariable = $.grep(result[0].variables, function(e){ return e.id == data.attributeIndex; });
+                        if( resultVariable && resultVariable[0]){
+                            resultVariable[0].value = value;
+                        }
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
+                    }
+
+                    this._currentReferenceAttributesLength--;
+                    if (this._currentReferenceAttributesLength <= 0) {
+                        // format our results
+                        dojoLang.hitch(this, formatResultsFunction, callback)();
                     }
                 }
+                else{
+                    var split = data.referenceAttribute.split("/");
+                    var referenceGuid = obj.getReference(split[0]);
+                    var referenceAttribute = split.slice(2).join("/");
 
-                l--;
-                if (l <= 0) {
-                    // format our results
-                    dojoLang.hitch(this, formatResultsFunction, callback)();
-                }
-            };
-
+<<<<<<< HEAD
             for (var i = 0; i < referenceAttributes.length; i++) {
                 var listObj = referenceAttributes[i],
                     split = referenceAttributes[i].variableAttribute.split("/"),
@@ -895,6 +1054,9 @@ define([
                         guid: guid,
                         callback: dojoLang.hitch(this, callbackfunction, dataparam)
                     });
+=======
+                    this._getReferencedObject(data.i, referenceGuid, referenceAttribute, data.attributeIndex, data.parentGuid, formatResultsFunction, callback);
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
                 }
             }
         },
@@ -936,9 +1098,10 @@ define([
             return template;
         },
 
-        _execMf: function (guid, mf, cb) {
-            if (guid && mf) {
-                mx.data.action({
+        _execMf: function (guid, mf, cb, showProgress, message) {
+            var self = this;
+            if (guid && mf) {                
+                var options = {
                     params: {
                         applyto: 'selection',
                         actionname: mf,
@@ -952,9 +1115,9 @@ define([
                     error: function (e) {
                         logger.error('Error running Microflow: ' + e);
                     }
-                }, this);
-            }
+                }
 
+<<<<<<< HEAD
         },
 
         _callNanoflow: function () {
@@ -969,6 +1132,15 @@ define([
                     alert(error.message);
                 }
             });
+=======
+                if(showProgress){                    
+                    options.progress = "modal";
+                    options.progressMsg = message;
+                }
+
+                mx.ui.action(mf,options, this);
+            }
+>>>>>>> e280d56a21be836ae81c7d3424c32001668cf632
         }
         /* CUSTOM FUNCTIONS END HERE */
     });
