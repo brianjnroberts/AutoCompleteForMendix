@@ -13,9 +13,9 @@
     Documentation
     ========================
     AutoComplete widget built using Select2 (https://select2.github.io/).
-    TODO: make offline sort order optional
-    TODO: make offline limit optional
-    TODO: make offline events work
+    [ OK ] TODO: make offline sort order optional
+    [ OK ] TODO: make offline limit optional
+    [ OK ] TODO: make offline events work
 */
 
 // Required module list. Remove unnecessary modules, you can always get them back from the boilerplate.
@@ -293,7 +293,13 @@ define([
                     }
 
                     // run the OC microflow if one has been configured.                   
-                    if (self.onChangeMicroflow) {
+                    if (self.onChangeNanoflow && self._doesNanoflowExist(self.onChangeNanoflow)) {
+                        mx.data.callNanoflow({
+                            nanoflow: self.onChangeNanoflow,
+                            origin: self.mxform,
+                            context: self.mxcontext
+                        });
+                    } else if (self.onChangeMicroflow) {
                         self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
                     }
                 })
@@ -305,7 +311,13 @@ define([
                     }
 
                     // run the OC microflow if one has been configured.                   
-                    if (self.onChangeMicroflow) {
+                    if (self.onChangeNanoflow && self._doesNanoflowExist(self.onChangeNanoflow)) {
+                        mx.data.callNanoflow({
+                            nanoflow: self.onChangeNanoflow,
+                            origin: self.mxform,
+                            context: self.mxcontext
+                        });
+                    } else if (self.onChangeMicroflow) {
                         self._execMf(self._contextObj.getGuid(), self.onChangeMicroflow, null, self.onChangeMicroflowShowProgress, self.onChangeMicroflowProgressMessage);
                     }
                 })
@@ -352,14 +364,22 @@ define([
                     noResults: function () {
                         var retval = self.noResultsText;
 
-                        if (self.noResultsDisplayType === "button" && self.noResultsMicroflow) {
+                        if (self.noResultsDisplayType === "button") {
                             retval = dojoConstruct.create("a", {
                                 href: "#",
                                 innerHTML: self.noResultsText,
                                 'class': "btn btn-block btn-noResults",
                                 onclick: function () {
                                     self._contextObj.set(self.noResultsSearchStringAttribute, self._currentSearchTerm);
-                                    self._execMf(self._contextObj.getGuid(), self.noResultsMicroflow);
+                                    if (self.onNoResultsButtonNanoflow && self._doesNanoflowExist(self.onNoResultsButtonNanoflow)) {
+                                        mx.data.callNanoflow({
+                                            nanoflow: self.onNoResultsButtonNanoflow,
+                                            origin: self.mxform,
+                                            context: self.mxcontext
+                                        });
+                                    } else if (self.noResultsMicroflow) {
+                                        self._execMf(self._contextObj.getGuid(), self.noResultsMicroflow);
+                                    }
                                     self._$combo.select2("close");
                                 }
                             });
@@ -709,13 +729,14 @@ define([
                     searchCallback(filteredObjs);
                 }
                 else if (self.searchType === "offline") {
-                    var entity = self.dataAssociation.split("/").slice(-1)[0];
                     var constraints = [],
-                        filter = {
-                            offset: 0,
-                            limit: self.offlineLimit,
-                            sort: [[self.offlineSortAttribute, (self.offlineSortAscending ? "asc" : "desc")]]
-                        };
+                        filter = {};
+                    var entity = self.dataAssociation.split("/").slice(-1)[0];
+                    filter.offset = 0;
+                    filter.limit = self.offlineLimit;
+                    if (self.offlineSortAttribute) {
+                        filter.sort = [[self.offlineSortAttribute, (self.offlineSortAscending ? "asc" : "desc")]]
+                    }
                     for (var i = 0; i < self.offlineConstraints.length; i++) {
                         var templatedConstraintValue = self.offlineConstraints[i].offlineConstraintValue.split('$value').join(self._currentSearchTerm);
                         var constraintValue = isNaN(parseInt(templatedConstraintValue)) ? templatedConstraintValue : templatedConstraintValue * 1
@@ -1044,7 +1065,11 @@ define([
 
                 mx.ui.action(mf, options, this);
             }
-        }
+        },
+
+        _doesNanoflowExist: function (nanoflow) {
+            return Object.keys(nanoflow) && Object.keys(nanoflow).length > 0;
+        },
         /* CUSTOM FUNCTIONS END HERE */
     });
 });

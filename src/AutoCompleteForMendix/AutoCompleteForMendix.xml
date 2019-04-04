@@ -408,10 +408,10 @@
                 </property>
             </properties>
         </property>
-        <property key="offlineLimit" type="integer" defaultValue="10" required="true">
+        <property key="offlineLimit" type="integer" defaultValue="0" required="true">
             <caption>Limit</caption>
             <category>Search - Offline</category>
-            <description></description>
+            <description>leave as 0 for no limit</description>
         </property>
         <property key="offlineSortAttribute" type="attribute" required="false" entityProperty="dataAssociation">
             <caption>Sort Attribute</caption>
@@ -431,6 +431,18 @@
             <caption>Ascending?</caption>
             <category>Search - Offline</category>
             <description>(Ignored if Sort Attribute is not specified)</description>
+        </property>
+        <property key="onChangeNanoflow" type="nanoflow" required="false">
+            <caption>On Change Nanoflow</caption>
+            <category>Events</category>
+            <description>If set, this takes priority over the microflow.</description>
+            <returnType type="Void" />
+        </property>
+        <property key="onNoResultsButtonNanoflow" type="nanoflow" required="false">
+            <caption>No Results Nanoflow</caption>
+            <category>No Results</category>
+            <description>If set, this takes priority over the microflow.</description>
+            <returnType type="Void" />
         </property>
     </properties>
 </widget>
