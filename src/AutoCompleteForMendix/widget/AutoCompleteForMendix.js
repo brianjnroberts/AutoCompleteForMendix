@@ -325,6 +325,15 @@ define([
                     var setfocus = setTimeout(function () {
                         self._$combo.select2('focus');
                     }, 0);
+                })
+                .on("select2:open", function (e) {
+                    self._lastOpened = new Date() * 1;
+                })
+                .on("select2:closing", function (e) {
+                    if (new Date() * 1 - self._lastOpened < 100) {
+                        // no human can click this fast.
+                        e.preventDefault();
+                    }
                 });
 
             this._$combo.data('select2')
@@ -729,6 +738,38 @@ define([
                     searchCallback(filteredObjs);
                 }
                 else if (self.searchType === "offline") {
+                    // offlineConstraintGroups{offlineGroupKey, offlineGroupOperator}
+                    // offlineConstraints{offlineConstraintGroupKey, offlineConstraintAttribute, offlineConstraintOperator, offlineConstraintValue}
+
+                    // create a constraintGroup object for each group:
+                    var cGroups = self.offlineConstraintGroups.map(function (g) {
+                        return {
+                            key: g.offlineGroupKey,
+                            operator: g.offlineGroupOperator,
+                            constraints: []
+                        }
+                    });
+
+                    // for each constraint, add it to the right group (based on key)
+                    self.offlineConstraints.forEach(function (c) {
+                        var group = cGroups.find(function (g) {
+                            return g.key === c.offlineConstraintGroupKey;
+                        });
+                        if (!group) {
+                            console.warn("Could not find a constraint group for constraint: " + c.offlineConstraintAttribute);
+                            return;
+                        } else {
+                            var templatedConstraintValue = c.offlineConstraintValue.split('$value').join(self._currentSearchTerm);
+                            var constraintValue = isNaN(parseInt(templatedConstraintValue)) ? templatedConstraintValue : templatedConstraintValue * 1
+                            var newConstraint = {
+                                attribute: c.offlineConstraintAttribute,
+                                operator: c.offlineConstraintOperator,
+                                value: constraintValue
+                            }
+                            group.constraints.push(newConstraint);
+                        }
+                    });
+
                     var constraints = [],
                         filter = {};
                     var entity = self.dataAssociation.split("/").slice(-1)[0];
@@ -737,18 +778,18 @@ define([
                     if (self.offlineSortAttribute) {
                         filter.sort = [[self.offlineSortAttribute, (self.offlineSortAscending ? "asc" : "desc")]]
                     }
-                    for (var i = 0; i < self.offlineConstraints.length; i++) {
-                        var templatedConstraintValue = self.offlineConstraints[i].offlineConstraintValue.split('$value').join(self._currentSearchTerm);
-                        var constraintValue = isNaN(parseInt(templatedConstraintValue)) ? templatedConstraintValue : templatedConstraintValue * 1
-                        var newConstraint = {
-                            attribute: self.offlineConstraints[i].offlineConstraintAttribute,
-                            operator: self.offlineConstraints[i].offlineConstraintOperator,
-                            value: constraintValue
-                        }
-                        constraints.push(newConstraint);
-                    }
+                    // for (var i = 0; i < self.offlineConstraints.length; i++) {
+                    //     var templatedConstraintValue = self.offlineConstraints[i].offlineConstraintValue.split('$value').join(self._currentSearchTerm);
+                    //     var constraintValue = isNaN(parseInt(templatedConstraintValue)) ? templatedConstraintValue : templatedConstraintValue * 1
+                    //     var newConstraint = {
+                    //         attribute: self.offlineConstraints[i].offlineConstraintAttribute,
+                    //         operator: self.offlineConstraints[i].offlineConstraintOperator,
+                    //         value: constraintValue
+                    //     }
+                    //     constraints.push(newConstraint);
+                    // }
 
-                    mx.data.getOffline(entity, constraints, filter, searchCallback, function (e) {
+                    mx.data.getOffline(entity, cGroups, filter, searchCallback, function (e) {
                         console.error("Could not retrieve slice:", e);
                         searchCallback(null);
                     });

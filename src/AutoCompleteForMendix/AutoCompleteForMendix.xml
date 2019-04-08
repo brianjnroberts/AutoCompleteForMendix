@@ -366,11 +366,37 @@
             <description>The progress message to show when executing the onchange microflow</description>
         </property>
         <!-- SEARCH - OFFLINE -->
+        <property key="offlineConstraintGroups" type="object" isList="true" required="true">
+            <caption>Constraint Group</caption>
+            <category>Search - Offline</category>
+            <description>Use this to group individual constraints into clauses to be `and`ed and `or`ed</description>
+            <properties>
+                <property key="offlineGroupKey" type="string" required="true">
+                    <caption>Key</caption>
+                    <category>Group</category>
+                    <description></description>
+                </property>
+                <property key="offlineGroupOperator" type="enumeration" defaultValue="and" required="true">
+                    <caption>Operator</caption>
+                    <category>Group</category>
+                    <description></description>
+                    <enumerationValues>
+                        <enumerationValue key="and">and</enumerationValue>
+                        <enumerationValue key="or">or</enumerationValue>
+                    </enumerationValues>
+                </property>
+            </properties>
+        </property>
         <property key="offlineConstraints" type="object" isList="true" required="false">
             <caption>Constraints</caption>
             <category>Search - Offline</category>
-            <description>Searching offline is a little different. All constraints will be `and`ed</description>
+            <description>All constraints must belong to a group, matched by group key.</description>
             <properties>
+                <property key="offlineConstraintGroupKey" type="string" required="true">
+                    <caption>Group Key</caption>
+                    <category>Constraint</category>
+                    <description>MUST match a Group defined above, or the constraint will be ignored.</description>
+                </property>
                 <property key="offlineConstraintAttribute" type="attribute" required="false" entityProperty="../dataAssociation">
                     <caption>Attribute</caption>
                     <category>Constraint</category>
@@ -432,6 +458,7 @@
             <category>Search - Offline</category>
             <description>(Ignored if Sort Attribute is not specified)</description>
         </property>
+
         <property key="onChangeNanoflow" type="nanoflow" required="false">
             <caption>On Change Nanoflow</caption>
             <category>Events</category>
