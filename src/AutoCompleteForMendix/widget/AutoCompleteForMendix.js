@@ -51,7 +51,7 @@ define([
         templateString: widgetTemplate,
 
         _$combo: null,
-        _isValid: true,
+        _configIsValid: true,
         _displayAttributes: [],
         _sortParams: [],
         _queryAdapter: null,
@@ -129,7 +129,7 @@ define([
             this._$combo = $(selector);
 
             // validate the widget        
-            this._isValid = this._validateWidget();
+            this._configIsValid = this._validateWidget();
 
             // adjust the template based on the display settings.
             if (this.showLabel) {
@@ -161,7 +161,7 @@ define([
             logger.debug(this.id + ".update");
             var self = this;
 
-            if (obj === null || !this._isValid) {
+            if (obj === null || !this._configIsValid) {
                 if (!dojoClass.contains(this.domNode, 'hidden')) {
                     dojoClass.add(this.domNode, 'hidden');
                 }
@@ -1111,6 +1111,10 @@ define([
         _doesNanoflowExist: function (nanoflow) {
             return Object.keys(nanoflow) && Object.keys(nanoflow).length > 0;
         },
+        isValid: function () {
+            this._clearValidations();
+            return true;
+        }
         /* CUSTOM FUNCTIONS END HERE */
     });
 });
