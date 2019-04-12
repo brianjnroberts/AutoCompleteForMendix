@@ -328,6 +328,7 @@ define([
                 })
                 .on("select2:open", function (e) {
                     self._lastOpened = new Date() * 1;
+                    self._attachCloseResultsButton();
                 })
                 .on("select2:closing", function (e) {
                     if (new Date() * 1 - self._lastOpened < 100) {
@@ -1114,6 +1115,23 @@ define([
         isValid: function () {
             this._clearValidations();
             return true;
+        },
+        /**
+         * In Fullscreen mode, we need a way for the user to close the result menu
+         */
+        _attachCloseResultsButton: function () {
+            // 1. grab a handle on the wrapper of the textbox
+            var parent = this.domNode.querySelector(".select2-search__field").parentElement;
+            // 2. add a button to the end of it, unless it's already there
+            if (parent.childElementCount === 1) {
+                var b = document.createElement("button");
+                b.className = "mx-select2 select2-search__close-button glyphicon glyiphicon-remove";
+                this.connect(b, "click", function () {
+                    this._$combo.select2("close");
+                }.bind(this));
+                parent.appendChild(b);
+                parent.style.display = "flex";
+            }
         }
         /* CUSTOM FUNCTIONS END HERE */
     });
