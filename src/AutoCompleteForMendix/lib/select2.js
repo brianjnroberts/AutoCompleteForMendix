@@ -1194,7 +1194,7 @@ define([], function () {
                                     });
                                 }
 
-                                this.$results.on('mouseup', '.select2-results__option[aria-selected]',
+                                this.$results.on('click', '.select2-results__option[aria-selected]',
                                     function (evt) {
 
                                         var $this = $(this);
@@ -1779,6 +1779,7 @@ define([], function () {
                                 }
 
                                 evt.stopPropagation();
+                                evt.preventDefault();
 
                                 var data = $clear.data('data');
 

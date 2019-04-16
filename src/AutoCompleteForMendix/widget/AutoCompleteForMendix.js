@@ -814,7 +814,7 @@ define([
             var referenceAttributes = [];
 
             dojoArray.forEach(objs, function (availableObject, index) {
-
+                if (!availableObject) { return };
                 var currentVariable = {};
                 currentVariable.guid = availableObject.getGuid();
                 currentVariable.variables = [];
@@ -1125,7 +1125,8 @@ define([
             // 2. add a button to the end of it, unless it's already there
             if (parent.childElementCount === 1) {
                 var b = document.createElement("button");
-                b.className = "mx-select2 select2-search__close-button glyphicon glyiphicon-remove";
+                b.innerText = "Cancel";
+                b.className = "mx-select2 select2-search__close-button";
                 this.connect(b, "click", function () {
                     this._$combo.select2("close");
                 }.bind(this));
