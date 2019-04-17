@@ -569,6 +569,7 @@ define([
             var $formGroup = $(selector);
             $formGroup.addClass('has-error');
             this._$combo.parent().append(this._$alertdiv);
+            this.mxform.markInvalid();
             //this._$combo.parent().addClass('has-error').append( this._$alertdiv );   
         },
 
